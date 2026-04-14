@@ -1,10 +1,12 @@
 # pytest-api-test-framework
 
-[//]: # (![CI]&#40;https://github.com/PawelDk/pytest-api-test-framework/actions/workflows/ci.yml/badge.svg&#41;)
+![CI](https://github.com/PawelDk/pytest-api-test-framework/actions/workflows/ci.yml/badge.svg)
 
 A production-style API test framework built with Python and pytest, demonstrating multi-layer test architecture, parallel execution, and clean separation between test infrastructure and test logic.
 
-Built against [JSONPlaceholder](https://jsonplaceholder.typicode.com) — a free public REST API. Note: all write operations (POST, PUT, DELETE) are simulated by the API and do not persist.
+Built against [JSONPlaceholder](https://jsonplaceholder.typicode.com) — a free public REST API.
+
+> **Note:** all write operations (POST, PUT, DELETE) are simulated by the API and do not persist.
 
 ---
 
@@ -14,6 +16,7 @@ Built against [JSONPlaceholder](https://jsonplaceholder.typicode.com) — a free
 - **pytest** — test runner
 - **requests** — HTTP client
 - **pytest-xdist** — parallel test execution
+- **pytest-html** — HTML report generation
 
 ---
 
@@ -63,6 +66,8 @@ python -m pytest -n auto
 python -m pytest tests/component/
 python -m pytest tests/integration/
 ```
+
+**HTML report** is generated at `reports/report.html` after each run. When running in parallel with `-n auto`, results from all workers are automatically combined into a single report.
 
 ---
 
