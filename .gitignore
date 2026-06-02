@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Pytest / tooling caches
+.pytest_cache/
+.cache/
+
+# Test reports
+reports/
+
+# IDEs
+.idea/
+.vscode/
+
+# OS
+.DS_Store
