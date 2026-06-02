@@ -12,7 +12,7 @@ Built against [JSONPlaceholder](https://jsonplaceholder.typicode.com) — a free
 
 ## Tech Stack
 
-- **Python 3.12**
+- **Python 3.13**
 - **pytest** — test runner
 - **requests** — HTTP client
 - **pytest-xdist** — parallel test execution
@@ -108,8 +108,8 @@ This allows `pytest-xdist` to distribute tests across workers (`-n auto`) withou
 | Layer | File | Tests |
 |-------|------|------:|
 | Component | `test_posts.py` | 14 |
-| Integration | `test_resource_flows.py` | 7 |
-| **Total** | | **21** |
+| Integration | `test_resource_flows.py` | 9 |
+| **Total** | | **23** |
 
 **Component layer covers:** GET all posts, GET single post, GET non-existent post (404), parametrized multi-post retrieval, POST, PUT, DELETE.
 
