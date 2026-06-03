@@ -75,7 +75,14 @@ python -m pytest tests/integration/
 
 ### HTTP Client Wrapper
 
-Rather than calling `requests` directly in tests, all HTTP calls go through a thin `APIClient` wrapper (`src/clients/api_client.py`). This centralises the base URL, session management, and headers in one place. Any future cross-cutting concern — logging, retry logic, auth — gets added once to the client, not scattered across tests.
+Rather than calling `requests` directly in tests, all HTTP calls go through a thin `APIClient` wrapper (`src/clients/api_client.py`). This centralises cross-cutting concerns in one place instead of scattering them across tests:
+
+- **Default timeout** — every request carries a 10s timeout (overridable per call), so a hung connection fails fast instead of blocking the run indefinitely.
+- **Automatic retries** — transient failures (dropped connections and `429`/`500`/`502`/`503`/`504` responses) are retried with exponential backoff via urllib3's `Retry`. `POST` is deliberately excluded, since retrying a create whose response was lost could produce a duplicate; `GET`/`PUT`/`DELETE` are safe to repeat.
+- **Default headers** — JSON `Accept`/`Content-Type` and a `User-Agent` are set once on the session.
+- **Request logging** — every call funnels through a single internal `_request` method that logs the method, URL, status code, and elapsed time.
+
+Adding the next cross-cutting concern (e.g. auth) means changing the client once, not every test.
 
 ### Session-Scoped Fixture
 
