@@ -15,6 +15,7 @@ Built against [JSONPlaceholder](https://jsonplaceholder.typicode.com) — a free
 - **Python 3.13**
 - **pytest** — test runner
 - **requests** — HTTP client
+- **pydantic** — response schema validation
 - **pytest-xdist** — parallel test execution
 - **pytest-html** — HTML report generation
 
@@ -27,6 +28,8 @@ pytest-api-test-framework/
 ├── src/
 │   ├── clients/
 │   │   └── api_client.py       # Session-based HTTP client wrapper
+│   ├── models/
+│   │   └── responses.py        # Pydantic response schemas
 │   └── helpers/
 │       └── builders.py         # Test data factories
 ├── tests/
@@ -83,6 +86,15 @@ Rather than calling `requests` directly in tests, all HTTP calls go through a th
 - **Request logging** — every call funnels through a single internal `_request` method that logs the method, URL, status code, and elapsed time.
 
 Adding the next cross-cutting concern (e.g. auth) means changing the client once, not every test.
+
+### Schema Validation
+
+Responses are validated against [pydantic](https://docs.pydantic.dev/) models (`src/models/responses.py`) rather than poking at the raw JSON dict. A single `Post.model_validate(response.json())` asserts the entire contract at once — every field is present *and* has the expected type — so a response that returned `"id": "abc"` instead of a number fails the test, where a `"id" in data` key-check would have passed.
+
+- **Typed access** — tests work with `post.user_id` (an attribute the IDE understands) instead of `response.json()["userId"]` (a string key that fails silently on a typo).
+- **camelCase ↔ snake_case** — the API speaks `userId`/`postId`; the models expose readable `user_id`/`post_id` via field aliases.
+- **Deep + format validation** — `User` validates nested `address`/`company` objects, and email fields use pydantic's `EmailStr` to validate format, not just presence.
+- **List validation** — `TypeAdapter(list[Post])` validates a whole JSON array in one call, reporting the offending index and field on failure.
 
 ### Session-Scoped Fixture
 

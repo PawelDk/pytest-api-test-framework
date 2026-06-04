@@ -1,5 +1,12 @@
 import pytest
+from pydantic import TypeAdapter
+
 from src.helpers.builders import build_post
+from src.models.responses import Post
+
+# Validates a JSON array of posts in one call: every element must satisfy the
+# Post contract, or validation raises with the offending index and field.
+PostList = TypeAdapter(list[Post])
 
 
 class TestPostsRead:
@@ -7,23 +14,19 @@ class TestPostsRead:
         response = client.get("/posts")
         assert response.status_code == 200
 
-    def test_get_all_posts_returns_list(self, client):
+    def test_get_all_posts_match_schema(self, client):
         response = client.get("/posts")
-        data = response.json()
-        assert isinstance(data, list)
-        assert len(data) > 0
+        posts = PostList.validate_python(response.json())
+        assert len(posts) > 0
 
     def test_get_single_post_returns_200(self, client):
         response = client.get("/posts/1")
         assert response.status_code == 200
 
-    def test_get_single_post_has_expected_fields(self, client):
+    def test_get_single_post_matches_schema(self, client):
         response = client.get("/posts/1")
-        data = response.json()
-        assert "id" in data
-        assert "title" in data
-        assert "body" in data
-        assert "userId" in data
+        post = Post.model_validate(response.json())
+        assert post.id == 1
 
     def test_get_nonexistent_post_returns_404(self, client):
         response = client.get("/posts/99999")
@@ -50,10 +53,10 @@ class TestPostsWrite:
     def test_create_post_reflects_sent_data(self, client):
         payload = build_post(title="Specific Title", body="Specific Body", user_id=3)
         response = client.post("/posts", payload)
-        data = response.json()
-        assert data["title"] == "Specific Title"
-        assert data["body"] == "Specific Body"
-        assert data["userId"] == 3
+        post = Post.model_validate(response.json())
+        assert post.title == "Specific Title"
+        assert post.body == "Specific Body"
+        assert post.user_id == 3
 
     def test_update_post_returns_200(self, client):
         payload = build_post(title="Updated Title")
