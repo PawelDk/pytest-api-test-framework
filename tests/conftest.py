@@ -1,7 +1,6 @@
 import pytest
 from src.clients.api_client import APIClient
-
-BASE_URL = "https://jsonplaceholder.typicode.com"
+from src.config import BASE_URL
 
 
 @pytest.fixture(scope="session")

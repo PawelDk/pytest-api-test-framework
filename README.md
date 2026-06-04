@@ -26,6 +26,7 @@ Built against [JSONPlaceholder](https://jsonplaceholder.typicode.com) — a free
 ```
 pytest-api-test-framework/
 ├── src/
+│   ├── config.py              # Env-driven config (API_BASE_URL)
 │   ├── clients/
 │   │   └── api_client.py       # Session-based HTTP client wrapper
 │   ├── models/
@@ -68,6 +69,11 @@ python -m pytest -n auto
 ```bash
 python -m pytest tests/component/
 python -m pytest tests/integration/
+```
+
+**Target a different environment:** the base URL defaults to the public JSONPlaceholder instance and is overridable via an environment variable, so no code change is needed to point the suite elsewhere:
+```bash
+API_BASE_URL=https://my-api.example.com python -m pytest
 ```
 
 **HTML report** is generated at `reports/report.html` after each run. When running in parallel with `-n auto`, results from all workers are automatically combined into a single report.
