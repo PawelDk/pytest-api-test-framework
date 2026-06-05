@@ -13,7 +13,7 @@ DEFAULT_RETRIES = 3
 class APIClient:
     """Thin, resilient wrapper around requests.Session.
 
-    Centralises base URL, default headers, request timeouts, a retry policy for
+    Centralizes base URL, default headers, request timeouts, a retry policy for
     transient failures, and request/response logging — so individual tests stay
     focused on assertions rather than HTTP plumbing.
     """

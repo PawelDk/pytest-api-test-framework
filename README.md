@@ -1,6 +1,7 @@
 # pytest-api-test-framework
 
 ![CI](https://github.com/PawelDk/pytest-api-test-framework/actions/workflows/ci.yml/badge.svg)
+[![Allure Report](https://img.shields.io/badge/report-Allure-blueviolet)](https://paweldk.github.io/pytest-api-test-framework/)
 
 A production-style API test framework built with Python and pytest, demonstrating multi-layer test architecture, parallel execution, and clean separation between test infrastructure and test logic.
 
@@ -17,7 +18,7 @@ Built against [JSONPlaceholder](https://jsonplaceholder.typicode.com) — a free
 - **requests** — HTTP client
 - **pydantic** — response schema validation
 - **pytest-xdist** — parallel test execution
-- **pytest-html** — HTML report generation
+- **Allure** — interactive HTML reports with run-over-run trend history
 
 ---
 
@@ -76,7 +77,23 @@ python -m pytest tests/integration/
 API_BASE_URL=https://my-api.example.com python -m pytest
 ```
 
-**HTML report** is generated at `reports/report.html` after each run. When running in parallel with `-n auto`, results from all workers are automatically combined into a single report.
+---
+
+## Reports
+
+Tests emit [Allure](https://allurereport.org/) result files (and a JUnit XML) on every run, which render into an interactive HTML report with steps, timings, and history.
+
+**View the latest report:** 📊 **[paweldk.github.io/pytest-api-test-framework](https://paweldk.github.io/pytest-api-test-framework/)** — published to GitHub Pages on every push to `main`, including a **trend graph** of pass-rate and duration across runs.
+
+**Generate it locally** (requires the Allure CLI — `brew install allure`):
+```bash
+python -m pytest          # writes raw results to allure-results/
+allure serve allure-results   # builds and opens the report in your browser
+```
+
+When running in parallel with `-n auto`, results from all workers are collected into the same `allure-results/` directory and combined into a single report.
+
+**In CI**, every run (including pull requests and failed runs) uploads the raw `allure-results/` and `reports/junit.xml` as a downloadable **`test-results`** artifact; pushes to `main` additionally publish the rendered report to the Pages link above.
 
 ---
 
@@ -84,7 +101,7 @@ API_BASE_URL=https://my-api.example.com python -m pytest
 
 ### HTTP Client Wrapper
 
-Rather than calling `requests` directly in tests, all HTTP calls go through a thin `APIClient` wrapper (`src/clients/api_client.py`). This centralises cross-cutting concerns in one place instead of scattering them across tests:
+Rather than calling `requests` directly in tests, all HTTP calls go through a thin `APIClient` wrapper (`src/clients/api_client.py`). This centralizes cross-cutting concerns in one place instead of scattering them across tests:
 
 - **Default timeout** — every request carries a 10s timeout (overridable per call), so a hung connection fails fast instead of blocking the run indefinitely.
 - **Automatic retries** — transient failures (dropped connections and `429`/`500`/`502`/`503`/`504` responses) are retried with exponential backoff via urllib3's `Retry`. `POST` is deliberately excluded, since retrying a create whose response was lost could produce a duplicate; `GET`/`PUT`/`DELETE` are safe to repeat.

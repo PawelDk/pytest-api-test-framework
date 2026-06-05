@@ -1,3 +1,5 @@
+# CI pipeline: runs the API test suite on every push and pull request to main,
+# then publishes an Allure report so results are viewable without cloning the repo.
 name: CI
 
 on:
@@ -6,21 +8,76 @@ on:
   pull_request:
     branches: [main]
 
+# Allow the report-publishing steps to push to the gh-pages branch.
+permissions:
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
+      # Pull the repository onto the runner.
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Match the Python version the project targets locally.
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
+      # Install pinned dependencies from requirements.txt (-v for a verbose, debuggable log).
       - name: Install dependencies
         run: pip install -r requirements.txt -v
 
+      # Run the suite across all available CPU cores via pytest-xdist.
       - name: Run tests in parallel
         run: python -m pytest -n auto
+
+      # Keep the raw results from every run (including PRs and failures) as a
+      # downloadable artifact, so they can be inspected even when Pages isn't updated.
+      - name: Upload test results (raw Allure + JUnit)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            allure-results
+            reports/junit.xml
+          if-no-files-found: error
+
+      # --- Publish the Allure HTML report to GitHub Pages ---
+      # Only on direct pushes to main; pull requests just get the artifact above.
+      # These steps run even when tests fail, so the report still shows the failures.
+
+      # Bring the previously published report into the workspace so the new build
+      # can append to its trend history (pass-rate / duration over time).
+      - name: Fetch previous report (enables trend history)
+        if: ${{ !cancelled() && github.event_name == 'push' }}
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      # Render the raw results into the static HTML report, carrying history forward
+      # and retaining the last 20 runs. The action bundles the Allure CLI (no Java setup needed).
+      - name: Build Allure report
+        if: ${{ !cancelled() && github.event_name == 'push' }}
+        uses: simple-elf/allure-report-action@v1.14
+        with:
+          allure_results: allure-results
+          gh_pages: gh-pages
+          allure_report: allure-report
+          allure_history: allure-history
+          keep_reports: 20
+
+      # Push the rendered report to the gh-pages branch, which serves the public site.
+      - name: Deploy report to GitHub Pages
+        if: ${{ !cancelled() && github.event_name == 'push' }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
