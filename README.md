@@ -18,6 +18,7 @@ Built against [JSONPlaceholder](https://jsonplaceholder.typicode.com) — a free
 - **requests** — HTTP client
 - **pydantic** — response schema validation
 - **pytest-xdist** — parallel test execution
+- **responses** — HTTP stubbing for the offline resilience tests
 - **Allure** — interactive HTML reports with run-over-run trend history
 
 ---
@@ -38,8 +39,10 @@ pytest-api-test-framework/
 │   ├── conftest.py             # Shared fixtures (session-scoped client)
 │   ├── component/
 │   │   └── test_posts.py       # Single-endpoint tests (GET, POST, PUT, DELETE)
-│   └── integration/
-│       └── test_resource_flows.py  # Cross-resource chained tests
+│   ├── integration/
+│   │   └── test_resource_flows.py  # Cross-resource chained tests
+│   └── unit/
+│       └── test_client_resilience.py  # Offline client tests (mocked retries, timeout)
 ├── .github/
 │   └── workflows/
 │       └── ci.yml              # GitHub Actions CI pipeline
@@ -70,6 +73,13 @@ python -m pytest -n auto
 ```bash
 python -m pytest tests/component/
 python -m pytest tests/integration/
+python -m pytest tests/unit/
+```
+
+**Run only the offline tests** (no network — the live API isn't required):
+```bash
+python -m pytest -m "not live"   # just the stubbed resilience tests
+python -m pytest -m live         # only the tests that hit the real API
 ```
 
 **Target a different environment:** the base URL defaults to the public JSONPlaceholder instance and is overridable via an environment variable, so no code change is needed to point the suite elsewhere:
@@ -133,7 +143,9 @@ Tests are designed to be parallel-safe by construction:
 
 This allows `pytest-xdist` to distribute tests across workers (`-n auto`) without risk of interference.
 
-### Component vs Integration Layer
+### Test Layers
+
+**Unit tests** (`tests/unit/`) exercise the `APIClient` in isolation with the network stubbed (`responses`) — covering the retry and timeout behaviour that a healthy live API never triggers. They run fully offline and are the only tests that exercise the resilience layer. The live tests are tagged with a `live` marker, so this hermetic subset runs on its own via `pytest -m "not live"`.
 
 **Component tests** (`tests/component/`) validate individual endpoints in isolation — one API call per test, asserting only on that response. They are fast and pinpoint failures to a single endpoint.
 
@@ -151,7 +163,10 @@ This allows `pytest-xdist` to distribute tests across workers (`-n auto`) withou
 |-------|------|------:|
 | Component | `test_posts.py` | 14 |
 | Integration | `test_resource_flows.py` | 9 |
-| **Total** | | **23** |
+| Unit | `test_client_resilience.py` | 3 |
+| **Total** | | **26** |
+
+**Unit layer covers:** retry on transient 5xx (fail-twice-then-succeed), POST deliberately not retried, timeout surfaced instead of hanging.
 
 **Component layer covers:** GET all posts, GET single post, GET non-existent post (404), parametrized multi-post retrieval, POST, PUT, DELETE.
 

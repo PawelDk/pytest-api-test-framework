@@ -4,6 +4,9 @@ from pydantic import TypeAdapter
 from src.helpers.builders import build_post
 from src.models.responses import Post
 
+# Every test in this module hits the real API.
+pytestmark = pytest.mark.live
+
 # Validates a JSON array of posts in one call: every element must satisfy the
 # Post contract, or validation raises with the offending index and field.
 PostList = TypeAdapter(list[Post])

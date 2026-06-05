@@ -3,3 +3,4 @@ requests==2.34.2
 pytest-xdist==3.8.0
 allure-pytest==2.16.0
 pydantic[email]==2.13.4
+responses==0.26.1

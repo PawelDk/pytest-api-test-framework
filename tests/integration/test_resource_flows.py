@@ -4,6 +4,9 @@ from pydantic import TypeAdapter
 from src.helpers.builders import build_comment, build_post
 from src.models.responses import Comment, Post, User
 
+# Every test in this module hits the real API.
+pytestmark = pytest.mark.live
+
 PostList = TypeAdapter(list[Post])
 CommentList = TypeAdapter(list[Comment])
 
