@@ -61,6 +61,11 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
+      # Drop the checkout's .git so it isn't copied into the published report and break the deploy (src refspec error).
+      - name: Drop git metadata from the fetched report
+        if: ${{ !cancelled() && github.event_name == 'push' }}
+        run: rm -rf gh-pages/.git
+
       # Render the raw results into the static HTML report, carrying history forward
       # and retaining the last 20 runs. The action bundles the Allure CLI (no Java setup needed).
       - name: Build Allure report
