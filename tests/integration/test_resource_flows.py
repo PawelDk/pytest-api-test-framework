@@ -1,3 +1,9 @@
+"""Integration tests for cross-resource relationships.
+
+Unlike the component tests, these chain several endpoints in one flow — e.g.
+fetch a user, then their posts — to verify the links between resources hold.
+"""
+
 import pytest
 from pydantic import TypeAdapter
 
@@ -12,6 +18,8 @@ CommentList = TypeAdapter(list[Comment])
 
 
 class TestUserPostsRelationship:
+    """Posts returned for a user belong to that user."""
+
     def test_posts_belong_to_fetched_user(self, client):
         user_response = client.get("/users/1")
         assert user_response.status_code == 200
@@ -44,6 +52,8 @@ class TestUserPostsRelationship:
 
 
 class TestPostCommentsRelationship:
+    """Comments returned for a post reference that post."""
+
     def test_comments_reference_their_post(self, client):
         post_response = client.get("/posts/1")
         assert post_response.status_code == 200
@@ -68,6 +78,8 @@ class TestPostCommentsRelationship:
 
 
 class TestPostCommentCreation:
+    """Creating a comment round-trips through the API contract."""
+
     def test_create_comment_then_fetch_comments_list(self, client):
         payload = build_comment(post_id=1, name="Flow Test Comment", email="flow@example.com", body="Testing the chain")
 

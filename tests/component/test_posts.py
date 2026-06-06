@@ -1,3 +1,9 @@
+"""Component tests for the posts resource against the live API.
+
+Each test exercises a single endpoint in isolation, asserting status codes
+and that responses satisfy the Post schema contract.
+"""
+
 import pytest
 from pydantic import TypeAdapter
 
@@ -13,6 +19,8 @@ PostList = TypeAdapter(list[Post])
 
 
 class TestPostsRead:
+    """Read paths: status codes plus Post schema contract."""
+
     def test_get_all_posts_returns_200(self, client):
         response = client.get("/posts")
         assert response.status_code == 200

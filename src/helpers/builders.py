@@ -1,3 +1,4 @@
+# Request payload builders. Keys use the API's camelCase wire format (userId, postId).
 def build_post(title: str = "Test Post", body: str = "Test body content", user_id: int = 1) -> dict:
     return {"title": title, "body": body, "userId": user_id}
 

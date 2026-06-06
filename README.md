@@ -7,7 +7,7 @@ A production-style API test framework built with Python and pytest, demonstratin
 
 Built against [JSONPlaceholder](https://jsonplaceholder.typicode.com) — a free public REST API.
 
-> **Note:** all write operations (POST, PUT, DELETE) are simulated by the API and do not persist.
+> **Note:** With JSONPlaceholder all write operations (POST, PUT, DELETE) are simulated by the API and do not persist.
 
 ---
 
@@ -46,7 +46,7 @@ pytest-api-test-framework/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml              # GitHub Actions CI pipeline
-├── pytest.ini
+├── pytest.ini                  # Test config: markers, CLI options, output paths
 └── requirements.txt
 ```
 
@@ -82,9 +82,9 @@ python -m pytest -m "not live"   # just the stubbed resilience tests
 python -m pytest -m live         # only the tests that hit the real API
 ```
 
-**Target a different environment:** the base URL defaults to the public JSONPlaceholder instance and is overridable via an environment variable, so no code change is needed to point the suite elsewhere:
+**Target a local mirror or proxy:** the base URL defaults to the public JSONPlaceholder instance and is overridable via an environment variable, so you can point the suite at a local mirror or proxy of the same API without a code change:
 ```bash
-API_BASE_URL=https://my-api.example.com python -m pytest
+API_BASE_URL=http://localhost:3000 python -m pytest
 ```
 
 ---
