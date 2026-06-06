@@ -38,7 +38,9 @@ pytest-api-test-framework/
 ├── tests/
 │   ├── conftest.py             # Shared fixtures (session-scoped client)
 │   ├── component/
-│   │   └── test_posts.py       # Single-endpoint tests (GET, POST, PUT, DELETE)
+│   │   ├── test_posts.py       # Single-endpoint tests (GET, POST, PUT, DELETE)
+│   │   ├── test_users.py       # User schema contract + 404 path
+│   │   └── test_comments.py    # Comment schema contract + 404 path
 │   ├── integration/
 │   │   └── test_resource_flows.py  # Cross-resource chained tests
 │   └── unit/
@@ -162,12 +164,14 @@ This allows `pytest-xdist` to distribute tests across workers (`-n auto`) withou
 | Layer | File | Tests |
 |-------|------|------:|
 | Component | `test_posts.py` | 14 |
+| Component | `test_users.py` | 3 |
+| Component | `test_comments.py` | 3 |
 | Integration | `test_resource_flows.py` | 9 |
 | Unit | `test_client_resilience.py` | 3 |
-| **Total** | | **26** |
+| **Total** | | **32** |
 
 **Unit layer covers:** retry on transient 5xx (fail-twice-then-succeed), POST deliberately not retried, timeout surfaced instead of hanging.
 
-**Component layer covers:** GET all posts, GET single post, GET non-existent post (404), parametrized multi-post retrieval, POST, PUT, DELETE.
+**Component layer covers:** GET all posts, GET single post, GET non-existent post (404), parametrized multi-post retrieval, POST, PUT, DELETE; plus User and Comment schema guardians and their 404 paths.
 
 **Integration layer covers:** user→posts ownership, multi-user post retrieval, user existence guard, post→comments relationship, comment creation chain, cross-resource write→read flow.
