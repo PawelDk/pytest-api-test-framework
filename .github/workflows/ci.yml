@@ -32,6 +32,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt -v
 
+      # Gate on code quality before running tests: lint catches likely bugs and
+      # unused imports; the format check enforces a single consistent layout.
+      - name: Lint and format check
+        run: |
+          ruff check src tests
+          ruff format --check src tests
+
       # Run the suite across all available CPU cores via pytest-xdist.
       - name: Run tests in parallel
         run: python -m pytest -n auto

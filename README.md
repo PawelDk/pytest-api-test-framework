@@ -20,6 +20,7 @@ Built against [JSONPlaceholder](https://jsonplaceholder.typicode.com) — a free
 - **pytest-xdist** — parallel test execution
 - **responses** — HTTP stubbing for the offline resilience tests
 - **Allure** — interactive HTML reports with run-over-run trend history
+- **ruff** — linting and formatting, enforced in CI
 
 ---
 
@@ -88,6 +89,12 @@ python -m pytest -m live         # only the tests that hit the real API
 **Target a local mirror or proxy:** the base URL defaults to the public JSONPlaceholder instance and is overridable via an environment variable, so you can point the suite at a local mirror or proxy of the same API without a code change:
 ```bash
 API_BASE_URL=http://localhost:3000 python -m pytest
+```
+
+**Lint and format** (the same checks CI enforces):
+```bash
+ruff check src tests          # lint
+ruff format src tests         # apply formatting (--check to verify only)
 ```
 
 ---
