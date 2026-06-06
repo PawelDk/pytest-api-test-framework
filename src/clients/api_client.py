@@ -18,15 +18,22 @@ class APIClient:
     focused on assertions rather than HTTP plumbing.
     """
 
-    def __init__(self, base_url: str, timeout: float = DEFAULT_TIMEOUT, retries: int = DEFAULT_RETRIES):
+    def __init__(
+        self,
+        base_url: str,
+        timeout: float = DEFAULT_TIMEOUT,
+        retries: int = DEFAULT_RETRIES,
+    ):
         self.base_url = base_url
         self.timeout = timeout
         self.session = requests.Session()
-        self.session.headers.update({
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "User-Agent": "pytest-api-test-framework",
-        })
+        self.session.headers.update(
+            {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "User-Agent": "pytest-api-test-framework",
+            }
+        )
 
         # Retry transient failures (dropped connections + the listed status
         # codes) with a short, growing wait between attempts. POST is left out
@@ -66,6 +73,9 @@ class APIClient:
         response = self.session.request(method, url, **kwargs)
         logger.info(
             "← %s %s [%s] %.0fms",
-            method, url, response.status_code, response.elapsed.total_seconds() * 1000,
+            method,
+            url,
+            response.status_code,
+            response.elapsed.total_seconds() * 1000,
         )
         return response

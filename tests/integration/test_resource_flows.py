@@ -81,7 +81,12 @@ class TestPostCommentCreation:
     """Creating a comment round-trips through the API contract."""
 
     def test_create_comment_then_fetch_comments_list(self, client):
-        payload = build_comment(post_id=1, name="Flow Test Comment", email="flow@example.com", body="Testing the chain")
+        payload = build_comment(
+            post_id=1,
+            name="Flow Test Comment",
+            email="flow@example.com",
+            body="Testing the chain",
+        )
 
         post_response = client.post("/posts/1/comments", payload)
         assert post_response.status_code == 201
@@ -97,7 +102,12 @@ class TestPostCommentCreation:
         assert post_response.status_code == 201
         post = Post.model_validate(post_response.json())
 
-        comment_payload = build_comment(post_id=post.id, name="Integration Comment", email="test@example.com", body="Comment body")
+        comment_payload = build_comment(
+            post_id=post.id,
+            name="Integration Comment",
+            email="test@example.com",
+            body="Comment body",
+        )
         comment_response = client.post(f"/posts/{post.id}/comments", comment_payload)
         assert comment_response.status_code == 201
 
