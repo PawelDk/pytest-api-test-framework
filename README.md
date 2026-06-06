@@ -44,7 +44,8 @@ pytest-api-test-framework/
 │   ├── integration/
 │   │   └── test_resource_flows.py  # Cross-resource chained tests
 │   └── unit/
-│       └── test_client_resilience.py  # Offline client tests (mocked retries, timeout)
+│       ├── test_client_resilience.py  # Offline client tests (mocked retries, timeout)
+│       └── test_schema_validation.py  # Offline schema tests (models reject bad data)
 ├── .github/
 │   └── workflows/
 │       └── ci.yml              # GitHub Actions CI pipeline
@@ -147,7 +148,7 @@ This allows `pytest-xdist` to distribute tests across workers (`-n auto`) withou
 
 ### Test Layers
 
-**Unit tests** (`tests/unit/`) exercise the `APIClient` in isolation with the network stubbed (`responses`) — covering the retry and timeout behaviour that a healthy live API never triggers. They run fully offline and are the only tests that exercise the resilience layer. The live tests are tagged with a `live` marker, so this hermetic subset runs on its own via `pytest -m "not live"`.
+**Unit tests** (`tests/unit/`) run fully offline. They exercise the `APIClient` in isolation with the network stubbed (`responses`) — covering the retry and timeout behaviour that a healthy live API never triggers — and feed deliberately malformed data to the response models to prove the schema validation rejects it (not just that it accepts good live data). The live tests are tagged with a `live` marker, so this hermetic subset runs on its own via `pytest -m "not live"`.
 
 **Component tests** (`tests/component/`) validate individual endpoints in isolation — one API call per test, asserting only on that response. They are fast and pinpoint failures to a single endpoint.
 
@@ -168,9 +169,10 @@ This allows `pytest-xdist` to distribute tests across workers (`-n auto`) withou
 | Component | `test_comments.py` | 3 |
 | Integration | `test_resource_flows.py` | 9 |
 | Unit | `test_client_resilience.py` | 3 |
-| **Total** | | **32** |
+| Unit | `test_schema_validation.py` | 4 |
+| **Total** | | **36** |
 
-**Unit layer covers:** retry on transient 5xx (fail-twice-then-succeed), POST deliberately not retried, timeout surfaced instead of hanging.
+**Unit layer covers:** retry on transient 5xx (fail-twice-then-succeed), POST deliberately not retried, timeout surfaced instead of hanging; plus schema guardians rejecting bad data — wrong field type, missing required field, malformed email, and list validation pinpointing the offending index.
 
 **Component layer covers:** GET all posts, GET single post, GET non-existent post (404), parametrized multi-post retrieval, POST, PUT, DELETE; plus User and Comment schema guardians and their 404 paths.
 

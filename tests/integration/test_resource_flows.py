@@ -43,7 +43,7 @@ class TestUserPostsRelationship:
 
     def test_user_must_exist_before_fetching_their_posts(self, client):
         user_response = client.get("/users/1")
-        assert user_response.status_code == 200, "User not found — skipping posts fetch"
+        assert user_response.status_code == 200
         user_id = user_response.json()["id"]
 
         posts_response = client.get(f"/posts?userId={user_id}")
