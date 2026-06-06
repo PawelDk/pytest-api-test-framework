@@ -1,0 +1,37 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","63","test_create_post_then_comment_reflects_sent_data","tests.integration","2026-06-06","passed","2026-06-06","TestPostCommentCreation","test_resource_flows","",""
+"","33","test_posts_belong_to_fetched_user","tests.integration","2026-06-06","passed","2026-06-06","TestUserPostsRelationship","test_resource_flows","",""
+"","126","test_created_post_comments_endpoint_is_reachable","tests.integration","2026-06-06","passed","2026-06-06","TestPostCommentsRelationship","test_resource_flows","",""
+"","19","test_comments_reference_their_post","tests.integration","2026-06-06","passed","2026-06-06","TestPostCommentsRelationship","test_resource_flows","",""
+"","87","test_update_post_returns_200","tests.component","2026-06-06","passed","2026-06-06","TestPostsWrite","test_posts","",""
+"A request that never completes must raise a timeout rather than hang
+forever — proving the default timeout in ``_request`` is wired through.
+","1","test_raises_when_server_does_not_respond","tests.unit","2026-06-06","passed","2026-06-06","TestTimeout","test_client_resilience","",""
+"","31","test_delete_post_returns_200","tests.component","2026-06-06","passed","2026-06-06","TestPostsWrite","test_posts","",""
+"","99","test_get_single_post_matches_schema","tests.component","2026-06-06","passed","2026-06-06","TestPostsRead","test_posts","",""
+"","9","test_multiple_users_all_have_posts[1]","tests.integration","2026-06-06","passed","2026-06-06","TestUserPostsRelationship","test_resource_flows","",""
+"","9","test_multiple_posts_are_retrievable[3]","tests.component","2026-06-06","passed","2026-06-06","TestPostsRead","test_posts","",""
+"","12","test_multiple_users_all_have_posts[3]","tests.integration","2026-06-06","passed","2026-06-06","TestUserPostsRelationship","test_resource_flows","",""
+"","18","test_get_nonexistent_post_returns_404","tests.component","2026-06-06","passed","2026-06-06","TestPostsRead","test_posts","",""
+"","9","test_multiple_posts_are_retrievable[5]","tests.component","2026-06-06","passed","2026-06-06","TestPostsRead","test_posts","",""
+"","99","test_get_all_posts_returns_200","tests.component","2026-06-06","passed","2026-06-06","TestPostsRead","test_posts","",""
+"POST is deliberately excluded from the retry policy: replaying a
+create that may have already succeeded server-side risks a duplicate.
+A 503 on POST must therefore surface immediately, with no second try.
+","2","test_does_not_retry_post","tests.unit","2026-06-06","passed","2026-06-06","TestRetryPolicy","test_client_resilience","",""
+"","33","test_create_post_returns_201","tests.component","2026-06-06","passed","2026-06-06","TestPostsWrite","test_posts","",""
+"","8","test_get_single_post_returns_200","tests.component","2026-06-06","passed","2026-06-06","TestPostsRead","test_posts","",""
+"Fail twice with 503 (a retryable status), then recover with 200.
+
+The client must surface the eventual success — and, crucially, must
+have made all three attempts. The call-count assertion is what proves
+the retry layer actually ran rather than being bypassed by the stub.
+","2","test_retries_transient_5xx_then_succeeds","tests.unit","2026-06-06","passed","2026-06-06","TestRetryPolicy","test_client_resilience","",""
+"","9","test_multiple_posts_are_retrievable[10]","tests.component","2026-06-06","passed","2026-06-06","TestPostsRead","test_posts","",""
+"","47","test_create_comment_then_fetch_comments_list","tests.integration","2026-06-06","passed","2026-06-06","TestPostCommentCreation","test_resource_flows","",""
+"","10","test_multiple_posts_are_retrievable[2]","tests.component","2026-06-06","passed","2026-06-06","TestPostsRead","test_posts","",""
+"","94","test_multiple_users_all_have_posts[2]","tests.integration","2026-06-06","passed","2026-06-06","TestUserPostsRelationship","test_resource_flows","",""
+"","21","test_user_must_exist_before_fetching_their_posts","tests.integration","2026-06-06","passed","2026-06-06","TestUserPostsRelationship","test_resource_flows","",""
+"","33","test_create_post_reflects_sent_data","tests.component","2026-06-06","passed","2026-06-06","TestPostsWrite","test_posts","",""
+"","11","test_multiple_posts_are_retrievable[1]","tests.component","2026-06-06","passed","2026-06-06","TestPostsRead","test_posts","",""
+"","10","test_get_all_posts_match_schema","tests.component","2026-06-06","passed","2026-06-06","TestPostsRead","test_posts","",""
