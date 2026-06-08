@@ -4,6 +4,7 @@ Each test exercises a single endpoint in isolation, asserting status codes
 and that responses satisfy the Post schema contract.
 """
 
+import allure
 import pytest
 from pydantic import TypeAdapter
 
@@ -15,6 +16,9 @@ pytestmark = pytest.mark.live
 PostList = TypeAdapter(list[Post])
 
 
+@allure.feature("Posts")
+@allure.story("Read")
+@allure.severity(allure.severity_level.NORMAL)
 class TestPostsRead:
     """Read paths: status codes plus Post schema contract."""
 
@@ -47,6 +51,9 @@ class TestPostsRead:
         assert response.json()["id"] == post_id
 
 
+@allure.feature("Posts")
+@allure.story("Write")
+@allure.severity(allure.severity_level.NORMAL)
 class TestPostsWrite:
     """
     JSONPlaceholder fakes write operations — POST/PUT/DELETE return success

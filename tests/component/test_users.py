@@ -4,6 +4,7 @@ Covers the User schema contract — including its nested address/company
 objects — and the 404 path for a user that does not exist.
 """
 
+import allure
 import pytest
 from pydantic import TypeAdapter
 
@@ -14,6 +15,9 @@ pytestmark = pytest.mark.live
 UserList = TypeAdapter(list[User])
 
 
+@allure.feature("Users")
+@allure.story("Read")
+@allure.severity(allure.severity_level.NORMAL)
 class TestUsersRead:
     """Read paths: status codes plus User schema contract."""
 

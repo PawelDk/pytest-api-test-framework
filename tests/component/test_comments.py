@@ -4,6 +4,7 @@ Covers the Comment schema contract (including email-format validation) and
 the 404 path for a comment that does not exist.
 """
 
+import allure
 import pytest
 from pydantic import TypeAdapter
 
@@ -14,6 +15,9 @@ pytestmark = pytest.mark.live
 CommentList = TypeAdapter(list[Comment])
 
 
+@allure.feature("Comments")
+@allure.story("Read")
+@allure.severity(allure.severity_level.NORMAL)
 class TestCommentsRead:
     """Read paths: status codes plus Comment schema contract."""
 

@@ -4,6 +4,7 @@ The live API is healthy, so these failure conditions never occur against it —
 we stub the dependency with ``responses`` and script them ourselves.
 """
 
+import allure
 import pytest
 import requests
 import responses
@@ -19,6 +20,9 @@ def client() -> APIClient:
     return APIClient(base_url=STUB_BASE_URL)
 
 
+@allure.feature("HTTP client resilience")
+@allure.story("Retry policy")
+@allure.severity(allure.severity_level.CRITICAL)
 class TestRetryPolicy:
     @responses.activate
     def test_retries_transient_5xx_then_succeeds(self, client):
@@ -47,6 +51,9 @@ class TestRetryPolicy:
         assert len(responses.calls) == 1
 
 
+@allure.feature("HTTP client resilience")
+@allure.story("Timeout")
+@allure.severity(allure.severity_level.NORMAL)
 class TestTimeout:
     @responses.activate
     def test_raises_when_server_does_not_respond(self, client):

@@ -5,6 +5,7 @@ so they show the happy path. These feed *bad* data and assert the model
 raises — proving the schema is a real guardian, not decoration. Fully offline.
 """
 
+import allure
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
@@ -15,6 +16,9 @@ def _valid_post() -> dict:
     return {"userId": 1, "id": 1, "title": "t", "body": "b"}
 
 
+@allure.feature("Schema validation")
+@allure.story("Models reject malformed data")
+@allure.severity(allure.severity_level.CRITICAL)
 class TestSchemaRejectsBadData:
     def test_wrong_type_is_rejected(self):
         """A non-numeric id must fail — a plain `"id" in data` check would pass."""

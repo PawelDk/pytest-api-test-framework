@@ -4,6 +4,7 @@ Unlike the component tests, these chain several endpoints in one flow — e.g.
 fetch a user, then their posts — to verify the links between resources hold.
 """
 
+import allure
 import pytest
 from pydantic import TypeAdapter
 
@@ -16,6 +17,9 @@ PostList = TypeAdapter(list[Post])
 CommentList = TypeAdapter(list[Comment])
 
 
+@allure.feature("Cross-resource flows")
+@allure.story("User → Posts")
+@allure.severity(allure.severity_level.CRITICAL)
 class TestUserPostsRelationship:
     """Posts returned for a user belong to that user."""
 
@@ -50,6 +54,9 @@ class TestUserPostsRelationship:
         assert len(posts_response.json()) > 0
 
 
+@allure.feature("Cross-resource flows")
+@allure.story("Post → Comments")
+@allure.severity(allure.severity_level.CRITICAL)
 class TestPostCommentsRelationship:
     """Comments returned for a post reference that post."""
 
@@ -76,6 +83,9 @@ class TestPostCommentsRelationship:
         assert comments_response.status_code == 200
 
 
+@allure.feature("Cross-resource flows")
+@allure.story("Comment creation")
+@allure.severity(allure.severity_level.CRITICAL)
 class TestPostCommentCreation:
     """Creating a comment round-trips through the API contract."""
 
