@@ -1,22 +1,15 @@
 """Pydantic response models for the JSONPlaceholder API.
 
-Each class describes the *contract* a response must satisfy: which fields are
-present and what type each one is. Validating a response against one of these
-models (`Post.model_validate(response.json())`) checks the whole shape in a
-single call and raises a precise error when the API drifts — far stronger than
-asserting individual keys exist.
+Each class defines the contract a response must satisfy: which fields are
+present and their types.
 """
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class _APIModel(BaseModel):
-    """Shared base for every response model.
-
-    The API speaks camelCase (`userId`, `postId`); Python prefers snake_case.
-    Each field maps the two with `alias`, and `populate_by_name` additionally
-    lets tests build a model using the readable snake_case name when needed.
-    """
+    """Shared base. Fields map the API's camelCase to snake_case via `alias`;
+    `populate_by_name` also lets tests build models by the snake_case name."""
 
     model_config = ConfigDict(populate_by_name=True)
 

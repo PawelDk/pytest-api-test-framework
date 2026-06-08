@@ -9,7 +9,6 @@ from pydantic import TypeAdapter
 
 from src.models.responses import Comment
 
-# Every test in this module hits the real API.
 pytestmark = pytest.mark.live
 
 CommentList = TypeAdapter(list[Comment])

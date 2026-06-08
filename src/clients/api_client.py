@@ -11,12 +11,8 @@ DEFAULT_RETRIES = 3
 
 
 class APIClient:
-    """Thin, resilient wrapper around requests.Session.
-
-    Centralizes base URL, default headers, request timeouts, a retry policy for
-    transient failures, and request/response logging — so individual tests stay
-    focused on assertions rather than HTTP plumbing.
-    """
+    """Wrapper around requests.Session: base URL, default headers, timeouts,
+    a retry policy, and request/response logging."""
 
     def __init__(
         self,
@@ -35,11 +31,8 @@ class APIClient:
             }
         )
 
-        # Retry transient failures (dropped connections + the listed status
-        # codes) with a short, growing wait between attempts. POST is left out
-        # on purpose: each POST creates a new record, so retrying one whose
-        # response got lost could create a duplicate. GET/PUT/DELETE are safe
-        # to repeat — running them again lands on the same result.
+        # Retry transient failures on idempotent methods only. POST is excluded:
+        # replaying a create whose response was lost could duplicate the record.
         retry_policy = Retry(
             total=retries,
             backoff_factor=0.5,
@@ -64,8 +57,7 @@ class APIClient:
         return self._request("DELETE", endpoint, **kwargs)
 
     def _request(self, method: str, endpoint: str, **kwargs) -> requests.Response:
-        """Single chokepoint for every request: applies the default timeout
-        (unless a caller overrides it) and logs the round trip."""
+        """Applies the default timeout (unless overridden) and logs the round trip."""
         url = f"{self.base_url}{endpoint}"
         kwargs.setdefault("timeout", self.timeout)
 

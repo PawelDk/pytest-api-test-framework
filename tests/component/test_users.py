@@ -9,7 +9,6 @@ from pydantic import TypeAdapter
 
 from src.models.responses import User
 
-# Every test in this module hits the real API.
 pytestmark = pytest.mark.live
 
 UserList = TypeAdapter(list[User])
